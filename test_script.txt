@@ -1,0 +1,5 @@
+# Test script
+ls
+cd /home
+conf-dump
+exit

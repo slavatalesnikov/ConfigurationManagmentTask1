@@ -1,0 +1,6 @@
+# Test error handling
+ls
+conf-dump
+unknown_command  # this should cause error
+ls  # this line should not execute
+exit
