@@ -1,0 +1,6 @@
+# Environment variables test
+ls $HOME
+conf-dump
+$HOME
+$USERNAME
+#exit

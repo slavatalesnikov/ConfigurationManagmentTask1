@@ -1,5 +1,6 @@
-# Test script
+# Basic functionality test
 ls
 cd /home
 conf-dump
-exit
+ls $HOME
+#exit

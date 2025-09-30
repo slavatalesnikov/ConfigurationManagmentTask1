@@ -56,12 +56,12 @@ def do_command(event=None):
         root.destroy()
     elif cmd == "ls":
         if len(parts) > 1:
-            show_text(f"Параметр ls: {parts[1]}")
+            show_text(f"Параметр ls: {parts[1:]}")
         else:
             show_text("ls без параметров")
     elif cmd == "cd":
         if len(parts) > 1:
-            show_text(f"Параметр cd: {parts[1]}")
+            show_text(f"Параметр cd: {parts[1:]}")
         else:
             show_text("cd без параметров")
     else:

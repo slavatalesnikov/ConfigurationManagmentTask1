@@ -3,12 +3,12 @@ import os
 import sys
 import locale
 
-
 if sys.platform.startswith('win'):
     locale.setlocale(locale.LC_ALL, 'rus_rus')
 
 vfs_path = ""
 script_path = ""
+script_name = ""
 
 def show_text(text):
     output_area.config(state=tk.NORMAL)
@@ -22,7 +22,10 @@ def replace_vars(text):
     for word in words:
         if word.startswith('$'):
             var_name = word[1:]
-            var_value = os.environ.get(var_name, '')
+            if var_name == "HOME":
+                var_value = os.environ.get('USERPROFILE', os.environ.get('HOME', ''))
+            else:
+                var_value = os.environ.get(var_name, '')
             result.append(var_value)
         else:
             result.append(word)
@@ -33,6 +36,19 @@ def run_command(command):
     
     if not command.strip():
         return True 
+    
+    if command.strip().startswith('$'):
+        var_name = command.strip()[1:]
+        if var_name == "HOME":
+            var_value = os.environ.get('USERPROFILE', os.environ.get('HOME', ''))
+        else:
+            var_value = os.environ.get(var_name, '')
+            
+        if var_value:
+            show_text(var_value)
+        else:
+            show_text(f"Переменная окружения '{var_name}' не найдена")
+        return True
     
     command_with_vars = replace_vars(command)
     parts = command_with_vars.split()
@@ -46,15 +62,15 @@ def run_command(command):
         return True
     elif cmd == "ls":
         if len(parts) > 1:
-            show_text(f"параметр ls: {parts[1]}")
+            show_text(f"parameter ls: {parts[1]}")
         else:
-            show_text("ls without parametr")
+            show_text("ls without parameter")
         return True
     elif cmd == "cd":
         if len(parts) > 1:
-            show_text(f"parametr cd: {parts[1]}")
+            show_text(f"parameter cd: {parts[1]}")
         else:
-            show_text("cd without parametr")
+            show_text("cd without parameter")
         return True
     elif cmd == "conf-dump":
         show_text(f"vfs_path = {vfs_path}")
@@ -70,12 +86,12 @@ def do_command(event=None):
     run_command(command)
 
 def run_script(script_file):
-    show_text(f"running a script: {script_file}")
+    show_text(f"running a script: {script_name}")
     try:
         with open(script_file, 'r', encoding='utf-8') as f:
             lines = f.readlines()
     except Exception as e:
-        show_text(f"error, we can not open a script '{script_file}'")
+        show_text(f"error, we can not open a script '{script_name}'")
         show_text(f"a reason is: {e}")
         return
 
@@ -113,18 +129,18 @@ command_entry.bind("<Return>", do_command)
 
 command_entry.focus()
 
-
 if len(sys.argv) < 3:
     show_text("error! you have to write 2 parameters:")
     show_text("  1) path to VFS")
     show_text("  2) path to start script")
     show_text("have to write: python emulator.py /my/vfs /my/script.txt")
 else:
-    vfs_path = sys.argv[1]
-    script_path = sys.argv[2]
+    vfs_path = os.path.abspath(sys.argv[1])
+    script_path = os.path.abspath(sys.argv[2])
+
+    script_name = os.path.basename(sys.argv[2])
     print_startup_info()
     root.after(500, lambda: run_script(script_path))  
-
 
 if __name__ == "__main__":
     root.mainloop()
