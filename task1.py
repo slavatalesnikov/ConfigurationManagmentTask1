@@ -7,17 +7,17 @@ def show_text(text):
     output_area.config(state=tk.DISABLED)
     output_area.see(tk.END)
 
+def get_env_var(var_name: str) -> str:
+    if var_name == "HOME":
+        return os.environ.get('USERPROFILE', os.environ.get('HOME', ''))
+    return os.environ.get(var_name, '')
+
 def replace_vars(text):
     words = text.split()
     result = []
     for word in words:
         if word.startswith('$'):
-            var_name = word[1:]
-            if var_name == "HOME":
-                var_value = os.environ.get('USERPROFILE', os.environ.get('HOME', ''))
-            else:
-                var_value = os.environ.get(var_name, '')
-            result.append(var_value)
+            result.append(get_env_var(word[1:]))
         else:
             result.append(word)
     return ' '.join(result)
@@ -32,20 +32,14 @@ def do_command(event=None):
         return
     
     if command.strip().startswith('$'):
-        var_name = command.strip()[1:]
-        if var_name == "HOME":
-            var_value = os.environ.get('USERPROFILE', os.environ.get('HOME', ''))
-        else:
-            var_value = os.environ.get(var_name, '')
-            
+        var_value = get_env_var(command.strip()[1:])
         if var_value:
             show_text(var_value)
         else:
-            show_text(f"Переменная окружения '{var_name}' не найдена")
+            show_text(f"Переменная окружения '{command.strip()[1:]}' не найдена")
         return
     
     command_with_vars = replace_vars(command)
-    
     parts = command_with_vars.split()
     if not parts:
         return
@@ -67,7 +61,6 @@ def do_command(event=None):
     else:
         show_text(f"Неизвестная команда '{cmd}'")
 
-
 root = tk.Tk()
 root.title("vsf")
 
@@ -85,7 +78,6 @@ command_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
 command_entry.bind("<Return>", do_command)
 
 command_entry.focus()
-
 
 if __name__ == "__main__":
     root.mainloop()

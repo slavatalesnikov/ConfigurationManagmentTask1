@@ -130,7 +130,7 @@ command_entry.bind("<Return>", do_command)
 command_entry.focus()
 
 if len(sys.argv) < 3:
-    show_text("error! you have to write 2 parameters:")
+    show_text("you have to write 2 parameters:")
     show_text("  1) path to VFS")
     show_text("  2) path to start script")
     show_text("have to write: python emulator.py /my/vfs /my/script.txt")
